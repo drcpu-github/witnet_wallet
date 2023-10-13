@@ -270,7 +270,8 @@ Future<void> _signMessage(SendPort port, Map<String, dynamic> params) async {
     signedMessage["address"] = address;
     signedMessage["message"] = message;
     signedMessage["public_key"] = _formatBytes(signature.publicKey.publicKey);
-    signedMessage["signature"] = _formatBytes(signature.signature.secp256k1.der);
+    signedMessage["signature"] =
+        _formatBytes(signature.signature.secp256k1.der);
 
     port.send(signedMessage);
   } catch (e) {
