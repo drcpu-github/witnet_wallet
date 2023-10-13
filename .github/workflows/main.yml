@@ -22,13 +22,13 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Setup Microsoft Store Developer CLI
-        uses: microsoft/setup-msstore-cli@v1
+      # - name: Setup Microsoft Store Developer CLI
+      #   uses: microsoft/setup-msstore-cli@v1
 
-      - name: Configure Microsoft Store Developer CLI
-        run: |
-          (Get-Content pubspec.yaml).replace('<REAL_CN>', "${{ secrets.CN }}") | Set-Content pubspec.yaml
-          msstore reconfigure -t ${{ secrets.PARTNER_CENTER_TENANT_ID }} -s ${{ secrets.PARTNER_CENTER_SELLER_ID }} -c ${{ secrets.PARTNER_CENTER_CLIENT_ID }} -cs ${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}
+      # - name: Configure Microsoft Store Developer CLI
+      #   run: |
+      #     (Get-Content pubspec.yaml).replace('<REAL_CN>', "${{ secrets.CN }}") | Set-Content pubspec.yaml
+      #     msstore reconfigure -t ${{ secrets.PARTNER_CENTER_TENANT_ID }} -s ${{ secrets.PARTNER_CENTER_SELLER_ID }} -c ${{ secrets.PARTNER_CENTER_CLIENT_ID }} -cs ${{ secrets.PARTNER_CENTER_CLIENT_SECRET }}
 
       - name: Install Project Dependencies
         run: flutter pub get
@@ -36,8 +36,8 @@ jobs:
       - name: Flutter Doctor
         run: flutter doctor
 
-      - name: Set Version
-        run: (Get-Content pubspec.yaml).replace('0.0.0+0', "${{ github.ref_name }}+0") | Set-Content pubspec.yaml
+      # - name: Set Version
+      #   run: (Get-Content pubspec.yaml).replace('0.0.0+0', "${{ github.ref_name }}+0") | Set-Content pubspec.yaml
 
       - name: Binary
         run: flutter build windows
@@ -47,11 +47,11 @@ jobs:
           Move-Item '.\build\windows\runner\Release' '.\myWitWallet'
           Compress-Archive -Path '.\myWitWallet' -DestinationPath '.\myWitWallet-windows.zip' -Force
 
-      - name: Compile MSIX
-        run: msstore package
+      # - name: Compile MSIX
+      #   run: msstore package
 
-      - name: Release on Microsoft Store
-        run: msstore publish -v
+      # - name: Release on Microsoft Store
+      #   run: msstore publish -v
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
@@ -59,323 +59,324 @@ jobs:
           name: windows
           path: .\myWitWallet-windows.zip
 
-  Linux:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
+  # Linux:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Create .env
-        run: cp ./.env.example ./.env
+  #     - name: Create .env
+  #       run: cp ./.env.example ./.env
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          architecture: x64
-          channel: 'stable'
-          cache: true
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         architecture: x64
+  #         channel: 'stable'
+  #         cache: true
 
-      - name: Install Project Dependencies
-        run: flutter pub get
+  #     - name: Install Project Dependencies
+  #       run: flutter pub get
 
-      - name: Install Linux Dependencies
-        run: sudo apt-get update -y && sudo apt-get install -y ninja-build libgtk-3-dev
+  #     - name: Install Linux Dependencies
+  #       run: sudo apt-get update -y && sudo apt-get install -y ninja-build libgtk-3-dev
 
-      - name: Flutter Doctor
-        run: flutter doctor
+  #     - name: Flutter Doctor
+  #       run: flutter doctor
 
-      - name: Set Version
-        run: sed -i "s/0.0.0+0/${{github.ref_name}}+0/g" pubspec.yaml
+  #     - name: Set Version
+  #       run: sed -i "s/0.0.0+0/${{github.ref_name}}+0/g" pubspec.yaml
 
-      - name: Binary
-        run: flutter build linux --release
+  #     - name: Binary
+  #       run: flutter build linux --release
 
-      - name: LDD
-        run: ldd build/linux/x64/release/bundle/myWitWallet
+  #     - name: LDD
+  #       run: ldd build/linux/x64/release/bundle/myWitWallet
 
-      - name: Archive Build
-        run: |
-          mv ./build/linux/x64/release/bundle ./myWitWallet
-          tar czvf myWitWallet-linux.tar.gz ./myWitWallet
+  #     - name: Archive Build
+  #       run: |
+  #         mv ./build/linux/x64/release/bundle ./myWitWallet
+  #         tar czvf myWitWallet-linux.tar.gz ./myWitWallet
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux
-          path: ./myWitWallet-linux.tar.gz
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: linux
+  #         path: ./myWitWallet-linux.tar.gz
 
-  MacOs:
-    environment: Macos
-    runs-on: macos-latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
+  # MacOs:
+  #   environment: Macos
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Create .env
-        run: cp ./.env.example ./.env
+  #     - name: Create .env
+  #       run: cp ./.env.example ./.env
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          architecture: x64
-          channel: 'stable'
-          cache: true
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         architecture: x64
+  #         channel: 'stable'
+  #         cache: true
 
-      - name: Install Project Dependencies
-        run: flutter pub get
+  #     - name: Install Project Dependencies
+  #       run: flutter pub get
 
-      - name: Flutter Doctor
-        run: flutter doctor
+  #     - name: Flutter Doctor
+  #       run: flutter doctor
 
-      - name: Set Version
-        run: |
-          brew install gsed
-          gsed -i "s/0.0.0+0/${{github.ref_name}}+0/g" pubspec.yaml
+  #     - name: Set Version
+  #       run: |
+  #         brew install gsed
+  #         gsed -i "s/0.0.0+0/${{github.ref_name}}+0/g" pubspec.yaml
 
-      - name: Binary
-        run: flutter build macos --release
+  #     - name: Binary
+  #       run: flutter build macos --release
 
-      - name: Prepare Signature/cert
-        env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-          KEY_CHAIN_PWD: ${{ secrets.KEY_CHAIN_PWD }}
-        run: |
-          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-          security create-keychain -p $KEY_CHAIN_PWD build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p $KEY_CHAIN_PWD build.keychain
-          security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEY_CHAIN_PWD build.keychain
-          security find-identity
+  #     - name: Prepare Signature/cert
+  #       env:
+  #         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+  #         MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+  #         KEY_CHAIN_PWD: ${{ secrets.KEY_CHAIN_PWD }}
+  #       run: |
+  #         echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+  #         security create-keychain -p $KEY_CHAIN_PWD build.keychain
+  #         security default-keychain -s build.keychain
+  #         security unlock-keychain -p $KEY_CHAIN_PWD build.keychain
+  #         security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+  #         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k $KEY_CHAIN_PWD build.keychain
+  #         security find-identity
 
-      - name: Sign
-        env:
-          IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
-        run: |
-          codesign --options=runtime --force --deep -s $IDENTITY_ID ./build/macos/Build/Products/Release/myWitWallet.app -v
+  #     - name: Sign
+  #       env:
+  #         IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
+  #       run: |
+  #         codesign --options=runtime --force --deep -s $IDENTITY_ID ./build/macos/Build/Products/Release/myWitWallet.app -v
 
-      - name: Verify Sign
-        env:
-          IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
-        run: codesign --verify -vvvv ./build/macos/Build/Products/Release/myWitWallet.app
+  #     - name: Verify Sign
+  #       env:
+  #         IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
+  #       run: codesign --verify -vvvv ./build/macos/Build/Products/Release/myWitWallet.app
 
-      - name: Create .dmg
-        run: |
-          brew install create-dmg
-          create-dmg \
-            --volname "myWitWallet" \
-            --window-pos 200 120 \
-            --window-size 800 529 \
-            --icon-size 130 \
-            --text-size 14 \
-            --icon "myWitWallet.app" 260 250 \
-            --hide-extension "myWitWallet.app" \
-            --app-drop-link 540 250 \
-            --hdiutil-verbose \
-            --no-internet-enable \
-            "myWitWallet.dmg" \
-            "./build/macos/Build/Products/Release/myWitWallet.app"
+  #     - name: Create .dmg
+  #       run: |
+  #         brew install create-dmg
+  #         create-dmg \
+  #           --volname "myWitWallet" \
+  #           --window-pos 200 120 \
+  #           --window-size 800 529 \
+  #           --icon-size 130 \
+  #           --text-size 14 \
+  #           --icon "myWitWallet.app" 260 250 \
+  #           --hide-extension "myWitWallet.app" \
+  #           --app-drop-link 540 250 \
+  #           --hdiutil-verbose \
+  #           --no-internet-enable \
+  #           "myWitWallet.dmg" \
+  #           "./build/macos/Build/Products/Release/myWitWallet.app"
 
-      - name: Sign .dmg
-        env:
-          IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
-        run: codesign --options=runtime --force --deep -s $IDENTITY_ID ./myWitWallet.dmg -v
+  #     - name: Sign .dmg
+  #       env:
+  #         IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
+  #       run: codesign --options=runtime --force --deep -s $IDENTITY_ID ./myWitWallet.dmg -v
 
-      - name: Notarize
-        env:
-          APPLE_EMAIL: ${{ secrets.APPLE_EMAIL }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
-        run: |
-          xcrun notarytool submit ./myWitWallet.dmg --apple-id "$APPLE_EMAIL" --password "$APPLE_PASSWORD" --team-id "$IDENTITY_ID" --wait
+  #     - name: Notarize
+  #       env:
+  #         APPLE_EMAIL: ${{ secrets.APPLE_EMAIL }}
+  #         APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+  #         IDENTITY_ID: ${{ secrets.IDENTITY_ID }}
+  #       run: |
+  #         xcrun notarytool submit ./myWitWallet.dmg --apple-id "$APPLE_EMAIL" --password "$APPLE_PASSWORD" --team-id "$IDENTITY_ID" --wait
 
-      - name: Staple
-        run: xcrun stapler staple ./myWitWallet.dmg
+  #     - name: Staple
+  #       run: xcrun stapler staple ./myWitWallet.dmg
 
-      - name: Verify Notarization & Stapling
-        run: |
-          spctl --assess -vvv --type install ./myWitWallet.dmg
-          xcrun stapler validate ./myWitWallet.dmg
+  #     - name: Verify Notarization & Stapling
+  #       run: |
+  #         spctl --assess -vvv --type install ./myWitWallet.dmg
+  #         xcrun stapler validate ./myWitWallet.dmg
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: macos
-          path: ./myWitWallet.dmg
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: macos
+  #         path: ./myWitWallet.dmg
 
-  Android:
-    runs-on: ubuntu-22.04
-    environment: Android
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
+  # Android:
+  #   runs-on: ubuntu-22.04
+  #   environment: Android
+  #   steps:
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Create .env
-        run: cp ./.env.example ./.env
+  #     - name: Create .env
+  #       run: cp ./.env.example ./.env
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          architecture: x64
-          channel: 'stable'
-          cache: true
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         architecture: x64
+  #         channel: 'stable'
+  #         cache: true
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '11'
-          cache: 'gradle'
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         distribution: 'zulu'
+  #         java-version: '11'
+  #         cache: 'gradle'
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2.2'
-          bundler-cache: true
-          working-directory: 'android'
+  #     - name: Setup Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: '3.2.2'
+  #         bundler-cache: true
+  #         working-directory: 'android'
 
-      - name: Install Project Dependencies
-        run: flutter pub get
+  #     - name: Install Project Dependencies
+  #       run: flutter pub get
 
-      - name: Flutter Doctor
-        run: flutter doctor
+  #     - name: Flutter Doctor
+  #       run: flutter doctor
 
-      - name: Add Credentials / Keys
-        working-directory: android
-        env:
-          PGP: ${{ secrets.ANDROID_PGP_KEY }}
-          PHRASE: ${{ secrets.ANDROID_PGP_KEY_PASSPHRASE }}
-          GPSA: ${{ secrets.ANDROID_GOOGLE_PLAY_KEY }}
-          KPROP: ${{ secrets.ANDROID_KEY_PROPERTIES }}
-        run: |
-          echo "$PGP" > upload-keystore.jks.asc
-          gpg -d --passphrase "$PHRASE" --batch upload-keystore.jks.asc > upload-keystore.jks
-          echo "$GPSA" > gpsa.json
-          echo "$KPROP" > key.properties
+      # - name: Add Credentials / Keys
+      #   working-directory: android
+      #   env:
+      #     PGP: ${{ secrets.ANDROID_PGP_KEY }}
+      #     PHRASE: ${{ secrets.ANDROID_PGP_KEY_PASSPHRASE }}
+      #     GPSA: ${{ secrets.ANDROID_GOOGLE_PLAY_KEY }}
+      #     KPROP: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+      #   run: |
+      #     echo "$PGP" > upload-keystore.jks.asc
+      #     gpg -d --passphrase "$PHRASE" --batch upload-keystore.jks.asc > upload-keystore.jks
+      #     echo "$GPSA" > gpsa.json
+      #     echo "$KPROP" > key.properties
 
-      - name: Add Beta Badge for Dev Releases
-        run: |
-          if [[ "${{github.ref_name}}" == *"dev"* ]]; then (cd android && ./beta_badge.sh); fi;
+      # - name: Add Beta Badge for Dev Releases
+      #   run: |
+      #     if [[ "${{github.ref_name}}" == *"dev"* ]]; then (cd android && ./beta_badge.sh); fi;
 
-      - name: Set Version
-        working-directory: android
-        run: |
-          export VCODE=$(bundle exec fastlane vcode | grep -o 'VersionCode: [0-9]*$' | grep -o '[0-9]*$')
-          sed -i "s/0.0.0+0/${{github.ref_name}}+$VCODE/g" ../pubspec.yaml
+      # - name: Set Version
+      #   working-directory: android
+      #   run: |
+      #     export VCODE=$(bundle exec fastlane vcode | grep -o 'VersionCode: [0-9]*$' | grep -o '[0-9]*$')
+      #     sed -i "s/0.0.0+0/${{github.ref_name}}+$VCODE/g" ../pubspec.yaml
 
-      - name: Binary (appbundle)
-        run: flutter build appbundle --release
+      # - name: Binary (appbundle)
+      #   run: flutter build appbundle
 
-      - name: Binary (apk)
-        run: flutter build apk --release
+      # - name: Binary (apk)
+      #   run: flutter build apk
 
-      - name: Run Tests
-        uses: maierj/fastlane-action@v3.0.0
-        with:
-          lane: 'test'
-          subdirectory: 'android'
+      # - name: Run Tests
+      #   uses: maierj/fastlane-action@v3.0.0
+      #   with:
+      #     lane: 'test'
+      #     subdirectory: 'android'
 
-      - name: Release on Playstore
-        working-directory: android
-        run: if [[ "${{github.ref_name}}" == *"dev"* ]]; then bundle exec fastlane beta; else bundle exec fastlane production; fi;
+      # - name: Release on Playstore
+      #   working-directory: android
+      #   run: if [[ "${{github.ref_name}}" == *"dev"* ]]; then bundle exec fastlane beta; else bundle exec fastlane production; fi;
 
-      - name: Archive Build
-        run: mv ./build/app/outputs/flutter-apk/app-release.apk ./myWitWallet.apk
+      # - name: Archive Build
+      #   run: mv ./build/app/outputs/flutter-apk/app-release.apk ./myWitWallet.apk
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: android
-          path: ./myWitWallet.apk
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: android
+      #     path: ./myWitWallet.apk
 
-  IOS:
-    runs-on: macos-latest
-    environment: IOS
-    steps:
-      - name: Clone
-        uses: actions/checkout@v3
+  # IOS:
+  #   runs-on: macos-latest
+  #   environment: IOS
+  #   steps:
+  #     - name: Clone
+  #       uses: actions/checkout@v3
 
-      - name: Create .env
-        run: cp ./.env.example ./.env
+  #     - name: Create .env
+  #       run: cp ./.env.example ./.env
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          architecture: x64
-          channel: 'stable'
-          cache: true
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         architecture: x64
+  #         channel: 'stable'
+  #         cache: true
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2.2'
-          bundler-cache: true
-          working-directory: 'ios'
+  #     - name: Setup Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: '3.2.2'
+  #         bundler-cache: true
+  #         working-directory: 'ios'
 
-      - name: Flutter Doctor
-        run: |
-          flutter --disable-telemetry
-          flutter doctor
+  #     - name: Flutter Doctor
+  #       run: |
+  #         flutter --disable-telemetry
+  #         flutter doctor
 
-      - name: Install Project Dependencies
-        run: flutter pub get
+  #     - name: Install Project Dependencies
+  #       run: flutter pub get
 
-      - name: Install Cocoapods
-        working-directory: ios
-        run: pod install
+  #     - name: Install Cocoapods
+  #       working-directory: ios
+  #       run: pod install
 
-      - name: Setup SSH Keys and known_hosts for Fastlane Match
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
-          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts ~/.ssh/id_rsa
-          eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa
+  #     - name: Setup SSH Keys and known_hosts for Fastlane Match
+  #       env:
+  #         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  #       run: |
+  #         mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
+  #         echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+  #         ssh-keyscan github.com >> ~/.ssh/known_hosts
+  #         chmod 600 ~/.ssh/known_hosts ~/.ssh/id_rsa
+  #         eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa
 
-      - name: Add Credentials / Keys
-        working-directory: ios
-        env:
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
-          PGP: ${{ secrets.APPLE_API_KEY }}
-          PHRASE: ${{ secrets.APPLE_API_KEY_PASSPHRASE }}
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          FASTLANE_USER: ${{ secrets.FASTLANE_USERNAME }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_AASP}}
-        run: |
-          brew install gnu-sed
-          gsed -i "s/TEAM_ID/$TEAM_ID/g" ./export_options.plist
-          gsed -i "s/SENSITIVE_REPLACE_ME/$TEAM_ID/g" ./Runner.xcodeproj/project.pbxproj
-          echo "$PGP" > key.json.asc
-          gpg -d --passphrase "$PHRASE" --batch key.json.asc > key.json
-          bundle exec fastlane setup
+  #     - name: Add Credentials / Keys
+  #       working-directory: ios
+  #       env:
+  #         TEAM_ID: ${{ secrets.TEAM_ID }}
+  #         ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
+  #         PGP: ${{ secrets.APPLE_API_KEY }}
+  #         PHRASE: ${{ secrets.APPLE_API_KEY_PASSPHRASE }}
+  #         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+  #         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+  #         FASTLANE_USER: ${{ secrets.FASTLANE_USERNAME }}
+  #         FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+  #         FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_AASP}}
+  #       run: |
+  #         brew install gnu-sed
+  #         gsed -i "s/TEAM_ID/$TEAM_ID/g" ./export_options.plist
+  #         gsed -i "s/SENSITIVE_REPLACE_ME/$TEAM_ID/g" ./Runner.xcodeproj/project.pbxproj
+  #         echo "$PGP" > key.json.asc
+  #         gpg -d --passphrase "$PHRASE" --batch key.json.asc > key.json
+  #         bundle exec fastlane setup
 
-      - name: Set Version
-        working-directory: ios
-        run: |
-          export VCODE=$(bundle exec fastlane vcode | grep -o 'VersionCode: [0-9]*$' | grep -o '[0-9]*$')
-          gsed -i "s/0.0.0+0/${{github.ref_name}}+$VCODE/g" ../pubspec.yaml
+  #     - name: Set Version
+  #       working-directory: ios
+  #       run: |
+  #         export VCODE=$(bundle exec fastlane vcode | grep -o 'VersionCode: [0-9]*$' | grep -o '[0-9]*$')
+  #         gsed -i "s/0.0.0+0/${{github.ref_name}}+$VCODE/g" ../pubspec.yaml
 
-      - name: Binary(ipa)
-        run: flutter build ipa --release --export-options-plist=./ios/export_options.plist
+  #     - name: Binary(ipa)
+  #       run: flutter build ipa --release --export-options-plist=./ios/export_options.plist
 
-      - name: Release on App-Store
-        working-directory: ios
-        run: if [[ "${{github.ref_name}}" == *"dev"* ]]; then bundle exec fastlane beta; else bundle exec fastlane production; fi;
+  #     - name: Release on App-Store
+  #       working-directory: ios
+  #       run: if [[ "${{github.ref_name}}" == *"dev"* ]]; then bundle exec fastlane beta; else bundle exec fastlane production; fi;
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ios
-          path: ./build/ios/ipa/myWitWallet.ipa
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: ios
+  #         path: ./build/ios/ipa/myWitWallet.ipa
 
   Release:
-    needs: [Windows, Linux, MacOs, Android, IOS]
+    needs: [Windows]
+    # needs: [Windows, Linux, MacOs, Android, IOS]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -396,10 +397,6 @@ jobs:
         run: |
           cd release
           mv windows/* .
-          mv linux/* .
-          mv macos/* .
-          mv android/* .
-          mv ios/* .
           rm -rf windows linux macos android ios
 
       - name: Publish Github Release
